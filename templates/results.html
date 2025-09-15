@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Result</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        body {
+            background-color: #f1f1f0;
+            background-image: url('https://ums.paruluniversity.ac.in/Default/assets/pages/img/1.jpg');
+            background-size: cover; background-position: center; background-attachment: fixed;
+            color: #000;
+        }
+        body::before {
+            content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #f1f1f0; opacity: 0.10; z-index: -1;
+        }
+        .main-wrapper {
+            padding-top: 3rem; padding-bottom: 3rem; display: flex;
+            flex-direction: column; min-height: 100vh;
+        }
+        .content-wrap { flex: 1; }
+        .pu-logo {
+            display: block; margin: 0 auto 1.5rem auto; max-width: 250px;
+            height: auto; mix-blend-mode: multiply;
+        }
+        .main-card {
+            margin: 20px auto; max-width: 800px; border-radius: 0px;
+            background-color: #ffffff; box-shadow: 0 .125rem .25rem rgba(0,0,0,0.1);
+            border: none;
+        }
+        .header-bar {
+            display: flex; align-items: center; justify-content: space-between; 
+            color: #3CB4AC; font-size: 22px;
+            gap: 8px; padding-bottom: 5px; border-bottom: 1px solid #ededed;
+        }
+        .header-title { display: flex; align-items: center; gap: 8px; }
+        .header-bar span {
+            font-size: 20px; font-weight: bold; font-family: Arial, sans-serif;
+            color: #000;
+        }
+        .btn-back {
+            background-color: transparent; border: 1px solid #0b4178; color: #0b4178;
+            border-radius: 50px; font-weight: 500; transition: all 0.3s ease;
+        }
+        .btn-back:hover { background-color: #0b4178; color: #fff; }
+        footer {
+            text-align: center; margin-top: auto; padding-top: 2rem;
+        }
+        .footer-credit {
+            display: flex; justify-content: space-between; align-items: center; max-width: 400px;
+            margin: 0 auto; background-color: rgba(0, 0, 0, 0.7); color: #fff;
+            padding: 0.75rem 1.5rem; border-radius: 50px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .footer-credit span { font-weight: 300; }
+        .social-icons a {
+            color: #fff; font-size: 1.2rem; margin-left: 1rem;
+            transition: transform 0.3s ease, color 0.3s ease;
+        }
+        .social-icons a:hover { transform: scale(1.2); color: #3CB4AC; }
+
+        /* Styles for the table and toggles */
+        .table th { color: #0b4178; width: 30%; }
+        .controls-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-top: 1.5rem; margin-bottom: 0.5rem;
+        }
+        .field-toggle-controls {
+            display: flex; flex-wrap: wrap; gap: 0.5rem;
+            padding: 1rem; background-color: #f8f9fa; border-radius: 8px;
+        }
+        .field-toggle-btn {
+            background-color: #e9ecef; color: #495057; border: 1px solid #dee2e6;
+            padding: 0.25rem 0.75rem; border-radius: 50px; font-size: 0.875rem;
+            cursor: pointer; transition: all 0.3s ease;
+        }
+        .field-toggle-btn.active {
+            background-color: #0b4178; color: #fff; border-color: #0b4178;
+        }
+        .field-toggle-btn.active .fa-check { display: inline-block; margin-right: 5px; }
+        .field-toggle-btn .fa-check { display: none; }
+    </style>
+</head>
+<body>
+    <div class="main-wrapper">
+        <div class="content-wrap">
+            <img src="{{ url_for('static', filename='puloglogin.png') }}" class="pu-logo" alt="Parul University">
+            <div class="card main-card p-4">
+                <div class="header-bar">
+                    <div class="header-title">
+                        <i class="fa fa-user-circle"></i>
+                        <span>STUDENT INFORMATION</span>
+                    </div>
+                    <a href="{{ url_for('home') }}" class="btn btn-sm btn-back">
+                        <i class="fa fa-arrow-left"></i> Back to Search
+                    </a>
+                </div>
+                
+                <div class="mt-3">
+                    {% if error %}
+                        <div class="alert alert-danger" role="alert">
+                            <strong>Error:</strong> {{ error }}
+                        </div>
+                    {% elif student_data %}
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped" id="studentInfoTable">
+                                <tbody>
+                                {% for key, value in student_data.items() %}
+                                    <tr data-field="{{ key | replace(' ', '-') }}">
+                                        <th>{{ key }}</th>
+                                        <td>{{ value }}</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <hr>
+                        <div class="controls-header">
+                            <h6>Toggle Field Visibility</h6>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn btn-outline-secondary" id="showAllBtn">Show All</button>
+                                <button type="button" class="btn btn-outline-secondary" id="hideAllBtn">Hide All</button>
+                            </div>
+                        </div>
+                        <div id="fieldToggleControls" class="field-toggle-controls"></div>
+                    {% else %}
+                        <div class="alert alert-warning" role="alert">
+                            No data to display. Something went wrong.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <footer>
+             <div class="footer-credit">
+                <span>Developed by: Adesh Sarwade</span>
+                <div class="social-icons">
+                    <a href="https://www.linkedin.com/in/sarwade-adesh-375297273/" target="_blank"><i class="fa fa-linkedin"></i></a>
+                    <a href="https://github.com/ADESHSARWADE" target="_blank"><i class="fa fa-github"></i></a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // MODIFIED: Selector changed to target the new table
+            const studentInfoTable = document.getElementById('studentInfoTable');
+            const controlsContainer = document.getElementById('fieldToggleControls');
+            const showAllBtn = document.getElementById('showAllBtn');
+            const hideAllBtn = document.getElementById('hideAllBtn');
+
+            if (studentInfoTable && controlsContainer) {
+                // MODIFIED: Selector now looks for <tr> (table row) elements
+                const fields = studentInfoTable.querySelectorAll('tbody tr[data-field]');
+                const toggleButtons = [];
+
+                fields.forEach(field => {
+                    const fieldName = field.getAttribute('data-field');
+                    // MODIFIED: Selector now looks for <th> (table header) for the label
+                    const fieldLabel = field.querySelector('th').innerText;
+                    
+                    const button = document.createElement('button');
+                    button.className = 'field-toggle-btn active';
+                    button.dataset.field = fieldName;
+                    button.innerHTML = `<i class="fa fa-check"></i> ${fieldLabel}`;
+                    
+                    controlsContainer.appendChild(button);
+                    toggleButtons.push(button);
+
+                    // MODIFIED: Toggles display property instead of a class for tables
+                    button.addEventListener('click', (e) => {
+                        const targetField = studentInfoTable.querySelector(`tr[data-field="${fieldName}"]`);
+                        e.currentTarget.classList.toggle('active');
+                        if (e.currentTarget.classList.contains('active')) {
+                            targetField.style.display = 'table-row';
+                        } else {
+                            targetField.style.display = 'none';
+                        }
+                    });
+                });
+
+                showAllBtn.addEventListener('click', () => {
+                    toggleButtons.forEach(btn => {
+                        btn.classList.add('active');
+                        const fieldElement = studentInfoTable.querySelector(`tr[data-field="${btn.dataset.field}"]`);
+                        fieldElement.style.display = 'table-row';
+                    });
+                });
+
+                hideAllBtn.addEventListener('click', () => {
+                    toggleButtons.forEach(btn => {
+                        btn.classList.remove('active');
+                        const fieldElement = studentInfoTable.querySelector(`tr[data-field="${btn.dataset.field}"]`);
+                        fieldElement.style.display = 'none';
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>
