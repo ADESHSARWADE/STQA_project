@@ -46,22 +46,20 @@
             border-radius: 50px; font-weight: 500; transition: all 0.3s ease;
         }
         .btn-back:hover { background-color: #0b4178; color: #fff; }
+        
         footer {
             text-align: center; margin-top: auto; padding-top: 2rem;
         }
         .footer-credit {
-            display: flex; justify-content: space-between; align-items: center; max-width: 400px;
-            margin: 0 auto; background-color: rgba(0, 0, 0, 0.7); color: #fff;
-            padding: 0.75rem 1.5rem; border-radius: 50px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            display: inline-block;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
         .footer-credit span { font-weight: 300; }
-        .social-icons a {
-            color: #fff; font-size: 1.2rem; margin-left: 1rem;
-            transition: transform 0.3s ease, color 0.3s ease;
-        }
-        .social-icons a:hover { transform: scale(1.2); color: #3CB4AC; }
 
-        /* Styles for the table and toggles */
         .table th { color: #0b4178; width: 30%; }
         .controls-header {
             display: flex; justify-content: space-between; align-items: center;
@@ -110,7 +108,15 @@
                                 {% for key, value in student_data.items() %}
                                     <tr data-field="{{ key | replace(' ', '-') }}">
                                         <th>{{ key }}</th>
-                                        <td>{{ value }}</td>
+                                        <td>
+                                            {% if value is string and value.lower().startswith('http') %}
+                                                <a href="{{ value }}" target="_blank" rel="noopener noreferrer">
+                                                    Click to View <i class="bi bi-box-arrow-up-right"></i>
+                                                </a>
+                                            {% else %}
+                                                {{ value }}
+                                            {% endif %}
+                                        </td>
                                     </tr>
                                 {% endfor %}
                                 </tbody>
@@ -135,31 +141,24 @@
         </div>
         <footer>
              <div class="footer-credit">
-                <span>Developed by: Adesh Sarwade</span>
-                <div class="social-icons">
-                    <a href="https://www.linkedin.com/in/sarwade-adesh-375297273/" target="_blank"><i class="fa fa-linkedin"></i></a>
-                    <a href="https://github.com/ADESHSARWADE" target="_blank"><i class="fa fa-github"></i></a>
-                </div>
+                <span>Developed by: Adesh Sarwade | Jaydeep Ukirde | Pranav Rakshe</span>
             </div>
         </footer>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // MODIFIED: Selector changed to target the new table
             const studentInfoTable = document.getElementById('studentInfoTable');
             const controlsContainer = document.getElementById('fieldToggleControls');
             const showAllBtn = document.getElementById('showAllBtn');
             const hideAllBtn = document.getElementById('hideAllBtn');
 
             if (studentInfoTable && controlsContainer) {
-                // MODIFIED: Selector now looks for <tr> (table row) elements
                 const fields = studentInfoTable.querySelectorAll('tbody tr[data-field]');
                 const toggleButtons = [];
 
                 fields.forEach(field => {
                     const fieldName = field.getAttribute('data-field');
-                    // MODIFIED: Selector now looks for <th> (table header) for the label
                     const fieldLabel = field.querySelector('th').innerText;
                     
                     const button = document.createElement('button');
@@ -170,7 +169,6 @@
                     controlsContainer.appendChild(button);
                     toggleButtons.push(button);
 
-                    // MODIFIED: Toggles display property instead of a class for tables
                     button.addEventListener('click', (e) => {
                         const targetField = studentInfoTable.querySelector(`tr[data-field="${fieldName}"]`);
                         e.currentTarget.classList.toggle('active');
